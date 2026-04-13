@@ -46,6 +46,18 @@ Opens your browser with an interactive graph.
 code-viz analyze . --serve
 ```
 
+### 3D visualization mode
+
+```bash
+code-viz analyze . --three-d
+```
+
+Experience your code dependencies in immersive 3D with:
+- Interactive camera controls (rotate, zoom, pan)
+- Animated particles showing data flow
+- Adjustable link distance and node size
+- Dark theme optimized for 3D
+
 ## 🎮 Interactive Controls
 
 | Control | Action |
