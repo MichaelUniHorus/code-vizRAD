@@ -46,9 +46,9 @@ dev = [
 code-viz = "code_viz.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/yourusername/code-viz"
-Repository = "https://github.com/yourusername/code-viz"
-Issues = "https://github.com/yourusername/code-viz/issues"
+Homepage = "https://github.com/MichaelUniHorus/code-vizRAD"
+Repository = "https://github.com/MichaelUniHorus/code-vizRAD"
+Issues = "https://github.com/MichaelUniHorus/code-vizRAD/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["code_viz"]
