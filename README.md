@@ -132,13 +132,31 @@ code-viz analyze . --no-open
 
 ## 🛣️ Roadmap
 
-- [ ] TypeScript/JavaScript support
-- [ ] Go modules support
-- [ ] Rust crates support
-- [ ] VS Code extension
-- [ ] GitHub Action for PR visualization
-- [ ] Export to SVG/PDF
-- [ ] 3D visualization mode
+### Analysis Features
+- [ ] **Circular dependency detection** — Identify and highlight circular imports
+- [ ] **Complexity metrics** — Cyclomatic complexity, code churn, technical debt
+- [ ] **Layer detection** — Auto-detect architectural layers (UI, business logic, data)
+- [ ] **Hotspot analysis** — Identify frequently changed modules
+- [ ] **Unused code detection** — Find modules with no incoming dependencies
+
+### Visualization Enhancements
+- [ ] **Layer grouping** — Group nodes by architectural layer
+- [ ] **Path highlighting** — Show all paths between two modules
+- [ ] **Filter by dependency type** — Filter by import type (direct, transitive)
+- [ ] **Export to SVG/PDF** — Vector exports for documentation
+- [ ] **Custom layouts** — Tree, hierarchical, circular layouts
+
+### CLI Improvements
+- [ ] **Diff mode** — Compare dependencies between commits/branches
+- [ ] **Watch mode** — Auto-update visualization on file changes
+- [ ] **History view** — Track dependency changes over time
+- [ ] **Batch analysis** — Analyze multiple projects at once
+- [ ] **JSON/CSV export** — Export metrics for custom analysis
+
+### Performance
+- [ ] **Incremental analysis** — Only reanalyze changed files
+- [ ] **Parallel parsing** — Faster analysis for large codebases
+- [ ] **Caching** — Cache AST parse results
 
 ## 🤝 Contributing
 
