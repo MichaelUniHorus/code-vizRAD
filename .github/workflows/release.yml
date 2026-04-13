@@ -34,6 +34,7 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
+        attestations: false
 
   github-release:
     runs-on: ubuntu-latest
