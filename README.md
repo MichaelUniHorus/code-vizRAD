@@ -2,7 +2,6 @@
 
 > **Understand any codebase in 60 seconds**
 
-[![PyPI version](https://badge.fury.io/py/code-viz.svg)](https://badge.fury.io/py/code-viz)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -16,7 +15,7 @@ Perfect for:
 
 ## ✨ Features
 
-- 🎯 **Instant Insights** — See module dependencies, hot spots, and architecture
+- 🎯 **Instant Insights** — See module dependencies, hotspots, and architecture
 - 🔍 **Smart Search** — Find any module instantly, filter by name or path
 - 🎨 **Beautiful Visuals** — Dark theme, color-coded by activity, sized by code volume
 - 💾 **Export** — Save as PNG for documentation
@@ -25,13 +24,12 @@ Perfect for:
 ## 📦 Installation
 
 ```bash
-pip install code-viz
-```
+# Clone the repository
+git clone https://github.com/MichaelUniHorus/code-vizRAD.git
+cd code-vizRAD
 
-Or with [pipx](https://pypa.github.io/pipx/) (recommended):
-
-```bash
-pipx install code-viz
+# Install dependencies
+pip install -e .
 ```
 
 ## 🚀 Quick Start
