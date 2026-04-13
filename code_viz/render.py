@@ -733,16 +733,17 @@ HTML_TEMPLATE_3D = '''
             .nodeId('id')
             .nodeLabel(node => node.id)
             .nodeColor(node => colorScale(node.degree))
-            .nodeRelSize(node => sizeScale(node.line_count) / 5)
+            .nodeRelSize(node => sizeScale(node.line_count) / 3)
             .linkSource('source')
             .linkTarget('target')
-            .linkWidth(link => Math.sqrt(link.weight || 1))
+            .linkWidth(link => Math.sqrt(link.weight || 1) * 2)
             .linkColor(() => '#4a5568')
-            .linkOpacity(0.6)
+            .linkOpacity(0.8)
             .linkDirectionalParticles(2)
             .linkDirectionalParticleSpeed(0.006)
             .backgroundColor('#0a0a0a')
-            .showNavInfo(true);
+            .showNavInfo(true)
+            .nodeResolution(8);
 
         // Controls
         document.getElementById('distanceSlider').addEventListener('input', (e) => {
