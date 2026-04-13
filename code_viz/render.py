@@ -718,6 +718,24 @@ HTML_TEMPLATE_3D = '''
 
         console.log('Graph data loaded:', graphData.nodes.length, 'nodes,', graphData.links.length, 'links');
 
+        // Create node lookup
+        const nodeMap = new Map();
+        graphData.nodes.forEach(node => nodeMap.set(node.id, node));
+
+        // Convert link source/target to node objects
+        const processedLinks = graphData.links.map(link => ({
+            source: nodeMap.get(link.source),
+            target: nodeMap.get(link.target),
+            weight: link.weight
+        })).filter(link => link.source && link.target);
+
+        const processedData = {
+            nodes: graphData.nodes,
+            links: processedLinks
+        };
+
+        console.log('Processed data:', processedData.nodes.length, 'nodes,', processedData.links.length, 'links');
+
         // Color scale based on connections
         const colorScale = (degree) => {
             if (degree > 10) return '#e94560';
@@ -732,13 +750,11 @@ HTML_TEMPLATE_3D = '''
         try {
             const Graph = ForceGraph3D()
                 (document.getElementById('graph'))
-                .graphData(graphData)
+                .graphData(processedData)
                 .nodeId('id')
                 .nodeLabel(node => node.id)
                 .nodeColor(node => colorScale(node.degree))
                 .nodeRelSize(node => sizeScale(node.line_count) / 4)
-                .linkSource('source')
-                .linkTarget('target')
                 .linkWidth(link => Math.sqrt(link.weight || 1) * 3)
                 .linkColor(() => '#4a5568')
                 .linkOpacity(0.8)
