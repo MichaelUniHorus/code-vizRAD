@@ -518,7 +518,7 @@ HTML_TEMPLATE_3D = '''
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Code Viz 3D - {{ root_name }}</title>
-    <script src="https://unpkg.com/3d-force-graph"></script>
+    <script src="https://unpkg.com/3d-force-graph@1.70.21/dist/3d-force-graph.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -716,6 +716,8 @@ HTML_TEMPLATE_3D = '''
     <script>
         const graphData = {{ data | tojson }};
 
+        console.log('Graph data loaded:', graphData.nodes.length, 'nodes,', graphData.links.length, 'links');
+
         // Color scale based on connections
         const colorScale = (degree) => {
             if (degree > 10) return '#e94560';
@@ -725,25 +727,35 @@ HTML_TEMPLATE_3D = '''
 
         // Size scale based on lines of code
         const maxLines = Math.max(...graphData.nodes.map(d => d.line_count || 0), 100);
-        const sizeScale = (lines) => Math.sqrt((lines || 0) / maxLines) * 5 + 2;
+        const sizeScale = (lines) => Math.sqrt((lines || 0) / maxLines) * 8 + 3;
 
-        const Graph = ForceGraph3D()
-            (document.getElementById('graph'))
-            .graphData(graphData)
-            .nodeId('id')
-            .nodeLabel(node => node.id)
-            .nodeColor(node => colorScale(node.degree))
-            .nodeRelSize(node => sizeScale(node.line_count) / 3)
-            .linkSource('source')
-            .linkTarget('target')
-            .linkWidth(link => Math.sqrt(link.weight || 1) * 2)
-            .linkColor(() => '#4a5568')
-            .linkOpacity(0.8)
-            .linkDirectionalParticles(2)
-            .linkDirectionalParticleSpeed(0.006)
-            .backgroundColor('#0a0a0a')
-            .showNavInfo(true)
-            .nodeResolution(8);
+        try {
+            const Graph = ForceGraph3D()
+                (document.getElementById('graph'))
+                .graphData(graphData)
+                .nodeId('id')
+                .nodeLabel(node => node.id)
+                .nodeColor(node => colorScale(node.degree))
+                .nodeRelSize(node => sizeScale(node.line_count) / 4)
+                .linkSource('source')
+                .linkTarget('target')
+                .linkWidth(link => Math.sqrt(link.weight || 1) * 3)
+                .linkColor(() => '#4a5568')
+                .linkOpacity(0.8)
+                .linkDirectionalParticles(2)
+                .linkDirectionalParticleSpeed(0.006)
+                .backgroundColor('#0a0a0a')
+                .showNavInfo(true)
+                .nodeResolution(12);
+
+            console.log('3D graph initialized');
+
+            // Adjust camera for better initial view
+            Graph.cameraPosition({ x: 0, y: 0, z: 800 });
+        } catch (error) {
+            console.error('Error initializing 3D graph:', error);
+            document.getElementById('graph').innerHTML = '<div style="color: red; padding: 20px;">Error loading 3D graph: ' + error.message + '</div>';
+        }
 
         // Controls
         document.getElementById('distanceSlider').addEventListener('input', (e) => {
