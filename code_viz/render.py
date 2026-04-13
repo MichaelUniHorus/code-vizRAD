@@ -11,7 +11,7 @@ from typing import Any
 from jinja2 import Template
 
 # HTML template with D3.js force-directed graph
-HTML_TEMPLATE = '''
+HTML_TEMPLATE_2D = '''
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -510,6 +510,271 @@ HTML_TEMPLATE = '''
 '''
 
 
+# HTML template with 3D-force-graph
+HTML_TEMPLATE_3D = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Viz 3D - {{ root_name }}</title>
+    <script src="https://unpkg.com/3d-force-graph"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+                sans-serif;
+            background: #0a0a0a;
+            color: #eee;
+            overflow: hidden;
+        }
+
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        #header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #e94560;
+        }
+
+        #stats {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #e94560;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        #controls {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(26, 26, 46, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 1px solid #e94560;
+        }
+
+        #controls label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        #controls input[type="range"] {
+            width: 150px;
+            margin-bottom: 10px;
+        }
+
+        #controls button {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+
+        #controls button:hover {
+            background: #ff6b6b;
+        }
+
+        #graph {
+            width: 100vw;
+            height: 100vh;
+            padding-top: 60px;
+        }
+
+        .legend {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(26, 26, 46, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid #e94560;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        #mode-toggle {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            background: rgba(26, 26, 46, 0.9);
+            color: #eee;
+            border: 1px solid #e94560;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            z-index: 100;
+        }
+
+        #mode-toggle:hover {
+            background: #e94560;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>🔍 Code Viz 3D: {{ root_name }}</h1>
+        <div id="stats">
+            <div class="stat">
+                <span class="stat-value">{{ stats.total_modules }}</span>
+                <span class="stat-label">Modules</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value">{{ stats.total_dependencies }}</span>
+                <span class="stat-label">Dependencies</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value">{{ "%.1f"|format(stats.avg_degree) }}</span>
+                <span class="stat-label">Avg Connections</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="graph"></div>
+
+    <div id="controls">
+        <label>Link Distance: <span id="distanceValue">100</span></label>
+        <input type="range" id="distanceSlider" min="30" max="300" value="100">
+
+        <label>Node Size: <span id="sizeValue">1</span></label>
+        <input type="range" id="sizeSlider" min="0.5" max="3" step="0.1" value="1">
+
+        <button id="resetBtn">Reset View</button>
+        <button id="toggleLabelsBtn">Toggle Labels</button>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background: #e94560;"></div>
+            <span>High Activity (>10 connections)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #0f3460;"></div>
+            <span>Medium Activity (5-10)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #533483;"></div>
+            <span>Low Activity (<5)</span>
+        </div>
+    </div>
+
+    <script>
+        const graphData = {{ data | tojson }};
+
+        // Color scale based on connections
+        const colorScale = (degree) => {
+            if (degree > 10) return '#e94560';
+            if (degree > 5) return '#0f3460';
+            return '#533483';
+        };
+
+        // Size scale based on lines of code
+        const maxLines = Math.max(...graphData.nodes.map(d => d.line_count || 0), 100);
+        const sizeScale = (lines) => Math.sqrt((lines || 0) / maxLines) * 5 + 2;
+
+        const Graph = ForceGraph3D()
+            (document.getElementById('graph'))
+            .graphData(graphData)
+            .nodeId('id')
+            .nodeLabel(node => node.id)
+            .nodeColor(node => colorScale(node.degree))
+            .nodeRelSize(node => sizeScale(node.line_count) / 5)
+            .linkSource('source')
+            .linkTarget('target')
+            .linkWidth(link => Math.sqrt(link.weight || 1))
+            .linkColor(() => '#4a5568')
+            .linkOpacity(0.6)
+            .linkDirectionalParticles(2)
+            .linkDirectionalParticleSpeed(0.006)
+            .backgroundColor('#0a0a0a')
+            .showNavInfo(true);
+
+        // Controls
+        document.getElementById('distanceSlider').addEventListener('input', (e) => {
+            const val = +e.target.value;
+            document.getElementById('distanceValue').textContent = val;
+            Graph.linkDistance(val);
+        });
+
+        document.getElementById('sizeSlider').addEventListener('input', (e) => {
+            const val = +e.target.value;
+            document.getElementById('sizeValue').textContent = val;
+            Graph.nodeRelSize(node => sizeScale(node.line_count) / 5 * val);
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            Graph.cameraPosition({ x: 0, y: 0, z: 500 });
+        });
+
+        let labelsVisible = true;
+        document.getElementById('toggleLabelsBtn').addEventListener('click', () => {
+            labelsVisible = !labelsVisible;
+            Graph.nodeLabel(labelsVisible ? node => node.id : '');
+        });
+
+        // Adjust camera for better initial view
+        Graph.cameraPosition({ x: 0, y: 0, z: 500 });
+    </script>
+</body>
+</html>
+'''
+
+
 class GraphRenderer:
     """Renders code dependency graph as interactive HTML."""
 
@@ -522,9 +787,17 @@ class GraphRenderer:
         data: dict[str, Any],
         filename: str = "code-viz.html",
         auto_open: bool = True,
+        mode: str = "2d",
     ) -> Path:
-        """Render graph data to HTML file."""
-        template = Template(HTML_TEMPLATE)
+        """Render graph data to HTML file.
+
+        Args:
+            data: Graph data dictionary
+            filename: Output filename
+            auto_open: Whether to open in browser
+            mode: Visualization mode ("2d" or "3d")
+        """
+        template = Template(HTML_TEMPLATE_3D if mode == "3d" else HTML_TEMPLATE_2D)
 
         root_name = Path(data.get("root_path", "project")).name
 

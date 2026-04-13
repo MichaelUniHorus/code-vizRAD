@@ -68,6 +68,11 @@ def main() -> None:
     default="html",
     help="Output format",
 )
+@click.option(
+    "--3d",
+    is_flag=True,
+    help="Use 3D visualization mode",
+)
 def analyze(
     path: Path,
     output: Path | None,
@@ -75,6 +80,7 @@ def analyze(
     port: int,
     no_open: bool,
     format: str,
+    _3d: bool,
 ) -> None:
     """Analyze code dependencies and generate visualization."""
     target_path = path.resolve()
@@ -143,6 +149,7 @@ def analyze(
 
     else:  # html
         renderer = GraphRenderer(output_dir)
+        mode = "3d" if _3d else "2d"
 
         if serve:
             console.print(f"\n[bold green]🚀 Starting server at http://localhost:{port}[/]")
@@ -154,7 +161,7 @@ def analyze(
             except KeyboardInterrupt:
                 console.print("\n[bold yellow]👋 Server stopped[/]")
         else:
-            output_file = renderer.render(data, auto_open=not no_open)
+            output_file = renderer.render(data, auto_open=not no_open, mode=mode)
             console.print(f"\n[bold green]🌐 Opened:[/] {output_file}")
 
 
