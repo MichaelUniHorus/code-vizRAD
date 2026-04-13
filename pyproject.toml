@@ -53,6 +53,13 @@ Issues = "https://github.com/MichaelUniHorus/code-vizRAD/issues"
 [tool.hatch.build.targets.wheel]
 packages = ["code_viz"]
 
+[tool.hatch.build.targets.sdist]
+include = [
+    "/code_viz",
+    "/README.md",
+    "/LICENSE",
+]
+
 [tool.ruff]
 target-version = "py39"
 line-length = 100
