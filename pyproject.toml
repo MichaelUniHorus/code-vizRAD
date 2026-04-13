@@ -1,6 +1,6 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "code-viz"
@@ -50,15 +50,11 @@ Homepage = "https://github.com/MichaelUniHorus/code-vizRAD"
 Repository = "https://github.com/MichaelUniHorus/code-vizRAD"
 Issues = "https://github.com/MichaelUniHorus/code-vizRAD/issues"
 
-[tool.hatch.build.targets.wheel]
+[tool.setuptools]
 packages = ["code_viz"]
 
-[tool.hatch.build.targets.sdist]
-include = [
-    "/code_viz",
-    "/README.md",
-    "/LICENSE",
-]
+[tool.setuptools.package-data]
+code_viz = ["templates/*"]
 
 [tool.ruff]
 target-version = "py39"
