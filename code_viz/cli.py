@@ -69,7 +69,7 @@ def main() -> None:
     help="Output format",
 )
 @click.option(
-    "--3d",
+    "--three-d",
     is_flag=True,
     help="Use 3D visualization mode",
 )
@@ -80,7 +80,7 @@ def analyze(
     port: int,
     no_open: bool,
     format: str,
-    _3d: bool,
+    three_d: bool,
 ) -> None:
     """Analyze code dependencies and generate visualization."""
     target_path = path.resolve()
@@ -149,7 +149,7 @@ def analyze(
 
     else:  # html
         renderer = GraphRenderer(output_dir)
-        mode = "3d" if _3d else "2d"
+        mode = "3d" if three_d else "2d"
 
         if serve:
             console.print(f"\n[bold green]🚀 Starting server at http://localhost:{port}[/]")
